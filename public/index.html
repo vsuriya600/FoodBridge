@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodBridge – Food Waste Reduction & Redistribution</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ============================================================= -->
+    <!-- AUTHENTICATION VIEW (Visible when logged out)                 -->
+    <!-- ============================================================= -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="brand-logo">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>FoodBridge</span>
+                </div>
+                <p class="auth-tagline">Smart Food Waste Reduction and Redistribution</p>
+            </div>
+
+            <!-- Login Form Section -->
+            <section id="section-login" class="auth-section">
+                <h2>Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to access your redistribution dashboard</p>
+
+                <form id="form-login" novalidate>
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                        <span class="field-error" id="login-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                        <span class="field-error" id="login-password-error"></span>
+                    </div>
+
+                    <button type="submit" id="btn-login" class="btn btn-primary btn-block">
+                        <span class="btn-text">Sign In</span>
+                        <span class="btn-spinner hidden"></span>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="link-go-to-register">Register here</a></p>
+                </div>
+            </section>
+
+            <!-- Registration Form Section -->
+            <section id="section-register" class="auth-section hidden">
+                <h2>Create an Account</h2>
+                <p class="auth-subtitle">Join the mission to reduce food waste and help communities</p>
+
+                <form id="form-register" novalidate>
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" class="form-control" placeholder="Jane Doe" required autocomplete="name">
+                        <span class="field-error" id="register-name-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-email">Email Address</label>
+                        <input type="email" id="register-email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                        <span class="field-error" id="register-email-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-phone">Phone Number (Optional)</label>
+                        <input type="tel" id="register-phone" class="form-control" placeholder="+1 555-0199" autocomplete="tel">
+                        <span class="field-error" id="register-phone-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-role">I want to join as</label>
+                        <select id="register-role" class="form-control">
+                            <option value="RECEIVER" selected>Receiver (browse and receive surplus food)</option>
+                            <option value="DONOR">Donor (donate surplus food)</option>
+                        </select>
+                        <small class="form-hint">Admin accounts are provisioned via system security initialization.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" class="form-control" placeholder="At least 6 characters" required autocomplete="new-password">
+                        <span class="field-error" id="register-password-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" class="form-control" placeholder="Re-enter password" required autocomplete="new-password">
+                        <span class="field-error" id="register-confirm-password-error"></span>
+                    </div>
+
+                    <button type="submit" id="btn-register" class="btn btn-primary btn-block">
+                        <span class="btn-text">Create Account</span>
+                        <span class="btn-spinner hidden"></span>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="link-go-to-login">Sign in</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- APP VIEW (Visible when authenticated)                          -->
+    <!-- ============================================================= -->
+    <div id="app-container" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>FoodBridge</span>
+                </div>
+                <button id="btn-close-sidebar" class="btn-icon mobile-only" aria-label="Close navigation">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Role Badge -->
+            <div class="sidebar-role-badge">
+                <span class="badge-dot"></span>
+                <span id="sidebar-role-label">Role</span>
+            </div>
+
+            <!-- Dynamic Navigation Links -->
+            <nav class="sidebar-nav">
+                <ul id="nav-links-list">
+                    <!-- Populated dynamically by renderNavigation() based on role -->
+                </ul>
+            </nav>
+
+            <!-- Sidebar User Profile & Logout -->
+            <div class="sidebar-footer">
+                <div class="user-summary">
+                    <div class="user-avatar" id="sidebar-user-avatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name" id="sidebar-user-name">User Name</div>
+                        <div class="user-email" id="sidebar-user-email">user@example.com</div>
+                    </div>
+                </div>
+                <button id="btn-sidebar-logout" class="btn btn-outline-danger btn-block btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Backdrop for Mobile -->
+        <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Top App Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="btn-toggle-sidebar" class="btn-icon mobile-only" aria-label="Open navigation">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <h1 id="topbar-title" class="topbar-title">Dashboard</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="status-indicator">
+                        <span class="status-dot active"></span>
+                        <span class="status-text">Connected</span>
+                    </div>
+                    <button id="btn-topbar-profile" class="btn-avatar" title="View Profile">
+                        <span id="topbar-avatar-text">U</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Container with Switching Sections -->
+            <main class="content-container">
+                <!-- Loading State Indicator -->
+                <div id="dashboard-loading" class="dashboard-loading hidden">
+                    <div class="spinner"></div>
+                    <p>Loading platform metrics from Clever Cloud MySQL...</p>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- ADMIN DASHBOARD SECTION                                   -->
+                <!-- ========================================================= -->
+                <section id="section-admin-dashboard" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Administrator Overview</h2>
+                        <p class="text-muted">Real-time system redistribution metrics and user analytics.</p>
+                    </div>
+
+                    <!-- Daily Highlight Bar -->
+                    <div class="daily-stats-banner">
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Food Donated Today</span>
+                            <span class="daily-value" id="admin-daily-donated">0 kg</span>
+                            <span class="daily-comp" id="admin-comp-donated"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Foods Reused Today</span>
+                            <span class="daily-value" id="admin-daily-reused">0 kg</span>
+                            <span class="daily-comp" id="admin-comp-reused"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Foods Wasted Today</span>
+                            <span class="daily-value" id="admin-daily-wasted">0 kg</span>
+                            <span class="daily-comp" id="admin-comp-wasted"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">People Helped Today</span>
+                            <span class="daily-value" id="admin-daily-people">0</span>
+                            <span class="daily-comp" id="admin-comp-people"></span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Cards Grid (8 Cards) -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Users</span>
+                                <span class="metric-value" id="admin-metric-users">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Donors</span>
+                                <span class="metric-value" id="admin-metric-donors">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-blue-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Receivers</span>
+                                <span class="metric-value" id="admin-metric-receivers">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-amber-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Food Donations</span>
+                                <span class="metric-value" id="admin-metric-donations">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Food Reused</span>
+                                <span class="metric-value" id="admin-metric-reused">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-orange-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Food Wasted</span>
+                                <span class="metric-value" id="admin-metric-wasted">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-purple-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Pending Requests</span>
+                                <span class="metric-value" id="admin-metric-pending">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-teal-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">People Helped</span>
+                                <span class="metric-value" id="admin-metric-people">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Food Redistribution Breakdown</h3>
+                                <span class="badge">Platform Summary</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-admin-redistribution"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Donations by Category</h3>
+                                <span class="badge">Top Categories</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-admin-categories"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Section -->
+                    <div class="card activity-card">
+                        <div class="card-header">
+                            <h3>Recent Platform Activity</h3>
+                            <span class="badge">Live Audit</span>
+                        </div>
+                        <div class="activity-list" id="admin-activity-list">
+                            <p class="text-muted text-center py-4">No recent platform transactions recorded yet.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- ADMIN: USER MANAGEMENT SECTION                           -->
+                <!-- ========================================================= -->
+                <section id="section-admin-users" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>User Management</h2>
+                        <p class="text-muted">View all platform users and toggle active/inactive account statuses.</p>
+                    </div>
+
+                    <div class="browse-controls-bar">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="admin-users-search" placeholder="Search by name or email...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="admin-users-role-filter" class="form-control">
+                                <option value="">All Roles</option>
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="DONOR">DONOR</option>
+                                <option value="RECEIVER">RECEIVER</option>
+                            </select>
+                            <select id="admin-users-status-filter" class="form-control">
+                                <option value="">All Statuses</option>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-admin-users">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Registered</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-bar" id="admin-users-pagination">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- ADMIN: FOOD LISTINGS SECTION                             -->
+                <!-- ========================================================= -->
+                <section id="section-admin-food" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Food Listings Review</h2>
+                        <p class="text-muted">Monitor and manage all surplus food listings created across the platform.</p>
+                    </div>
+
+                    <div class="browse-controls-bar">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="admin-food-search" placeholder="Search food name or donor...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="admin-food-category-filter" class="form-control">
+                                <option value="">All Categories</option>
+                                <option value="Cooked Meals">Cooked Meals</option>
+                                <option value="Bakery & Bread">Bakery & Bread</option>
+                                <option value="Fresh Produce">Fresh Produce</option>
+                                <option value="Dairy & Eggs">Dairy & Eggs</option>
+                                <option value="Packaged & Canned">Packaged & Canned</option>
+                                <option value="Beverages">Beverages</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select id="admin-food-status-filter" class="form-control">
+                                <option value="">All Statuses</option>
+                                <option value="AVAILABLE">AVAILABLE</option>
+                                <option value="FULLY_RESERVED">FULLY_RESERVED</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-admin-food">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Food Item</th>
+                                        <th>Category</th>
+                                        <th>Donor</th>
+                                        <th>Total</th>
+                                        <th>Available</th>
+                                        <th>Reserved</th>
+                                        <th>Collected</th>
+                                        <th>Wasted</th>
+                                        <th>Status</th>
+                                        <th>Expires</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-food-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-bar" id="admin-food-pagination">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- ADMIN: REQUESTS MONITORING SECTION                       -->
+                <!-- ========================================================= -->
+                <section id="section-admin-requests" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Platform Requests Monitoring</h2>
+                        <p class="text-muted">Audit and track all food redistribution requests and collection transactions.</p>
+                    </div>
+
+                    <div class="browse-controls-bar">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="admin-requests-search" placeholder="Search item, receiver or donor...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="admin-requests-status-filter" class="form-control">
+                                <option value="">All Statuses</option>
+                                <option value="PENDING">PENDING</option>
+                                <option value="ACCEPTED">ACCEPTED</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="REJECTED">REJECTED</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card table-card">
+                        <div class="table-responsive">
+                            <table class="data-table" id="table-admin-requests">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Food Item</th>
+                                        <th>Receiver</th>
+                                        <th>Donor</th>
+                                        <th>Quantity</th>
+                                        <th>Beneficiaries</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-requests-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-bar" id="admin-requests-pagination">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- ADMIN: PLATFORM ANALYTICS SECTION                        -->
+                <!-- ========================================================= -->
+                <section id="section-admin-analytics" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Platform Redistribution Analytics</h2>
+                        <p class="text-muted">Comprehensive redistribution efficiency, waste reduction rates, and platform impact metrics.</p>
+                    </div>
+
+                    <!-- Platform Impact KPI Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Redistribution Efficiency</span>
+                                <span class="metric-value" id="admin-analytics-efficiency">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Surplus Logged</span>
+                                <span class="metric-value" id="admin-analytics-total-qty">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-orange-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Waste Percentage</span>
+                                <span class="metric-value text-danger" id="admin-analytics-waste-rate">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-teal-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Active Users Ratio</span>
+                                <span class="metric-value" id="admin-analytics-active-ratio">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Redistribution Flow Breakdown</h3>
+                                <span class="badge">Lifecycle</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-admin-analytics-breakdown"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Category Distribution</h3>
+                                <span class="badge">Quantity by Category</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-admin-analytics-categories"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR DASHBOARD SECTION                                   -->
+                <!-- ========================================================= -->
+                <section id="section-donor-dashboard" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Donor Dashboard</h2>
+                        <p class="text-muted">Track your surplus food donations, collection statuses, and community impact.</p>
+                    </div>
+
+                    <!-- Daily Highlight Bar -->
+                    <div class="daily-stats-banner">
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Donated Today</span>
+                            <span class="daily-value" id="donor-daily-donated">0 kg</span>
+                            <span class="daily-comp" id="donor-comp-donated"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Reused Today</span>
+                            <span class="daily-value" id="donor-daily-reused">0 kg</span>
+                            <span class="daily-comp" id="donor-comp-reused"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Wasted Today</span>
+                            <span class="daily-value" id="donor-daily-wasted">0 kg</span>
+                            <span class="daily-comp" id="donor-comp-wasted"></span>
+                        </div>
+                        <div class="daily-stat-item">
+                            <span class="daily-label">People Helped Today</span>
+                            <span class="daily-value" id="donor-daily-people">0</span>
+                            <span class="daily-comp" id="donor-comp-people"></span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Food Donated</span>
+                                <span class="metric-value" id="donor-metric-donated">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Foods Reused</span>
+                                <span class="metric-value" id="donor-metric-reused">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-orange-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Foods Wasted</span>
+                                <span class="metric-value" id="donor-metric-wasted">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-purple-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Pending Requests</span>
+                                <span class="metric-value" id="donor-metric-pending">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-blue-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Completed Collections</span>
+                                <span class="metric-value" id="donor-metric-completed">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-teal-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">People Helped</span>
+                                <span class="metric-value" id="donor-metric-people">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Donation Redistribution Status</h3>
+                                <span class="badge">Your Donations</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-donor-breakdown"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h3>Recent Food Listings</h3>
+                                <span class="badge">Phase 4 Ready</span>
+                            </div>
+                            <div class="activity-list" id="donor-activity-list">
+                                <p class="text-muted text-center py-4">No donation listings published yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- RECEIVER DASHBOARD SECTION                                -->
+                <!-- ========================================================= -->
+                <section id="section-receiver-dashboard" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Receiver Dashboard</h2>
+                        <p class="text-muted">Browse available surplus food listings and monitor your food requests.</p>
+                    </div>
+
+                    <!-- Daily Highlight Bar -->
+                    <div class="daily-stats-banner">
+                        <div class="daily-stat-item">
+                            <span class="daily-label">Collected Today</span>
+                            <span class="daily-value" id="receiver-daily-collected">0 kg</span>
+                            <span class="daily-comp" id="receiver-comp-collected"></span>
+                        </div>
+                    </div>
+
+                    <!-- Metric Cards Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Available Food Listings</span>
+                                <span class="metric-value" id="receiver-metric-available">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-purple-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Pending Requests</span>
+                                <span class="metric-value" id="receiver-metric-pending">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-blue-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Approved Requests</span>
+                                <span class="metric-value" id="receiver-metric-approved">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Completed Collections</span>
+                                <span class="metric-value" id="receiver-metric-completed">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-teal-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Food Collected</span>
+                                <span class="metric-value" id="receiver-metric-collected-qty">0 kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Requests Status Overview</h3>
+                                <span class="badge">Your Requests</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-receiver-status"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h3>Recent Requests</h3>
+                                <span class="badge">Phase 4 Ready</span>
+                            </div>
+                            <div class="activity-list" id="receiver-activity-list">
+                                <p class="text-muted text-center py-4">No food requests submitted yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR: MY FOOD DONATIONS SECTION                          -->
+                <!-- ========================================================= -->
+                <section id="section-donor-my-donations" class="app-section hidden">
+                    <div class="section-header-row">
+                        <div>
+                            <h2>My Food Donations</h2>
+                            <p class="text-muted">Manage your surplus food listings and track real-time redistribution statuses.</p>
+                        </div>
+                        <button id="btn-open-create-food" class="btn btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Donate Food</span>
+                        </button>
+                    </div>
+
+                    <!-- Filter Bar for Donor Listings -->
+                    <div class="filter-bar">
+                        <select id="donor-status-filter" class="form-control filter-select">
+                            <option value="">All Listing Statuses</option>
+                            <option value="AVAILABLE">AVAILABLE</option>
+                            <option value="FULLY_RESERVED">FULLY RESERVED</option>
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                    </div>
+
+                    <div id="donor-donations-list" class="donations-grid">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR: CREATE FOOD DONATION FORM SECTION                  -->
+                <!-- ========================================================= -->
+                <section id="section-donor-create-food" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Publish Food Donation</h2>
+                        <p class="text-muted">Fill out the details of the surplus food available for redistribution.</p>
+                    </div>
+
+                    <div class="card form-card">
+                        <form id="form-create-food" novalidate>
+                            <div class="form-row">
+                                <div class="form-group flex-2">
+                                    <label for="create-food-name">Food Item Name *</label>
+                                    <input type="text" id="create-food-name" class="form-control" placeholder="e.g. Fresh Vegetable Biryani" required>
+                                    <span class="field-error" id="create-food-name-error"></span>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="create-category">Category *</label>
+                                    <select id="create-category" class="form-control" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Cooked Meals">Cooked Meals</option>
+                                        <option value="Bakery & Bread">Bakery & Bread</option>
+                                        <option value="Fresh Produce">Fresh Produce</option>
+                                        <option value="Dairy & Eggs">Dairy & Eggs</option>
+                                        <option value="Packaged & Canned">Packaged & Canned</option>
+                                        <option value="Beverages">Beverages</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span class="field-error" id="create-category-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label for="create-quantity">Total Quantity *</label>
+                                    <input type="number" id="create-quantity" class="form-control" min="0.1" step="0.1" placeholder="e.g. 15.0" required>
+                                    <span class="field-error" id="create-quantity-error"></span>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="create-unit">Unit *</label>
+                                    <input type="text" id="create-unit" class="form-control" placeholder="e.g. kg, packets, meals, boxes" required>
+                                    <span class="field-error" id="create-unit-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label for="create-prepared-at">Preparation Date & Time (Optional)</label>
+                                    <input type="datetime-local" id="create-prepared-at" class="form-control">
+                                    <span class="field-error" id="create-prepared-at-error"></span>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label for="create-expiry-at">Expiry Date & Time *</label>
+                                    <input type="datetime-local" id="create-expiry-at" class="form-control" required>
+                                    <span class="field-error" id="create-expiry-at-error"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="create-pickup-address">Pickup Address *</label>
+                                <textarea id="create-pickup-address" class="form-control" rows="2" placeholder="Street address, building, floor or pickup landmark" required></textarea>
+                                <span class="field-error" id="create-pickup-address-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="create-image-url">Food Image URL (Optional)</label>
+                                <input type="url" id="create-image-url" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                                <span class="field-error" id="create-image-url-error"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="create-description">Description & Handling Notes (Optional)</label>
+                                <textarea id="create-description" class="form-control" rows="3" placeholder="Storage instructions, allergens (nuts, dairy), reheat instructions..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" id="btn-cancel-create-food">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="btn-submit-create-food">
+                                    <span class="btn-text">Publish Listing</span>
+                                    <span class="btn-spinner hidden"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR: INCOMING REQUESTS SECTION                          -->
+                <!-- ========================================================= -->
+                <section id="section-donor-incoming-requests" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Incoming Food Requests</h2>
+                        <p class="text-muted">Review, accept, or reject requests from receivers for your surplus food listings.</p>
+                    </div>
+
+                    <div id="donor-requests-list" class="requests-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR: DONATION HISTORY SECTION                           -->
+                <!-- ========================================================= -->
+                <section id="section-donor-history" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Donation History</h2>
+                        <p class="text-muted">Complete audit log of your fulfilled collections and impact.</p>
+                    </div>
+
+                    <div id="donor-history-list" class="requests-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- DONOR: DONATION ANALYTICS SECTION                         -->
+                <!-- ========================================================= -->
+                <section id="section-donor-analytics" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Donation Analytics & Impact</h2>
+                        <p class="text-muted">Track your environmental contribution, redistribution rate, and community reach.</p>
+                    </div>
+
+                    <!-- Impact KPI Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon bg-green-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Redistribution Rate</span>
+                                <span class="metric-value" id="donor-analytics-rate">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-emerald-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total Donated</span>
+                                <span class="metric-value" id="donor-analytics-total">0 kg</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-teal-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Total People Helped</span>
+                                <span class="metric-value" id="donor-analytics-people">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-icon bg-orange-light">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </div>
+                            <div class="metric-content">
+                                <span class="metric-label">Food Saved from Waste</span>
+                                <span class="metric-value" id="donor-analytics-saved">0 kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Donation Lifecycle Breakdown</h3>
+                                <span class="badge">Overview</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chart-donor-analytics-breakdown"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card activity-card">
+                            <div class="card-header">
+                                <h3>Recent Collection Impact</h3>
+                                <span class="badge">Fulfilled</span>
+                            </div>
+                            <div class="activity-list" id="donor-analytics-history-list">
+                                <p class="text-muted text-center py-4">No completed collections yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- RECEIVER: BROWSE FOOD SECTION                             -->
+                <!-- ========================================================= -->
+                <section id="section-receiver-browse" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Browse Surplus Food</h2>
+                        <p class="text-muted">Available, unexpired surplus food donations in your community ready for collection.</p>
+                    </div>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="browse-controls-bar">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="browse-search" placeholder="Search by food name...">
+                        </div>
+                        <div class="filter-group">
+                            <select id="browse-category" class="form-control">
+                                <option value="">All Categories</option>
+                                <option value="Cooked Meals">Cooked Meals</option>
+                                <option value="Bakery & Bread">Bakery & Bread</option>
+                                <option value="Fresh Produce">Fresh Produce</option>
+                                <option value="Dairy & Eggs">Dairy & Eggs</option>
+                                <option value="Packaged & Canned">Packaged & Canned</option>
+                                <option value="Beverages">Beverages</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select id="browse-sort" class="form-control">
+                                <option value="newest">Newest First</option>
+                                <option value="expiry">Earliest Expiry</option>
+                                <option value="quantity">Highest Quantity</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Food Cards Grid -->
+                    <div id="browse-food-list" class="food-cards-grid">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- RECEIVER: MY REQUESTS SECTION                             -->
+                <!-- ========================================================= -->
+                <section id="section-receiver-my-requests" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>My Food Requests</h2>
+                        <p class="text-muted">Track the status of your active and past food requests.</p>
+                    </div>
+
+                    <div id="receiver-requests-list" class="requests-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- RECEIVER: COLLECTION HISTORY SECTION                      -->
+                <!-- ========================================================= -->
+                <section id="section-receiver-history" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Collection History</h2>
+                        <p class="text-muted">Past food collections successfully completed by you.</p>
+                    </div>
+
+                    <div id="receiver-history-list" class="requests-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- MODALS & DIALOGS                                          -->
+                <!-- ========================================================= -->
+
+                <!-- 1. Submit Request Modal (Receiver) -->
+                <div id="modal-request-food" class="modal-backdrop hidden">
+                    <div class="modal-box">
+                        <div class="modal-header">
+                            <h3 id="modal-req-title">Request Food</h3>
+                            <button class="btn-icon modal-close" data-modal="modal-request-food">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="item-summary-card">
+                                <strong id="modal-req-food-name">Food Name</strong>
+                                <div class="item-summary-meta">
+                                    <span>Available: <strong id="modal-req-avail-qty">0</strong> <span id="modal-req-unit">kg</span></span>
+                                    <span>Expires: <span id="modal-req-expiry">Date</span></span>
+                                </div>
+                            </div>
+                            <form id="form-submit-request">
+                                <input type="hidden" id="modal-req-food-id">
+                                <div class="form-group">
+                                    <label for="modal-req-quantity">Requested Quantity *</label>
+                                    <input type="number" id="modal-req-quantity" class="form-control" step="0.1" min="0.1" required>
+                                    <small class="form-hint">Enter the quantity you need, up to the available amount.</small>
+                                    <span class="field-error" id="modal-req-qty-error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="modal-req-pickup-time">Estimated Pickup Time (Optional)</label>
+                                    <input type="datetime-local" id="modal-req-pickup-time" class="form-control">
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-outline modal-close" data-modal="modal-request-food">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="btn-submit-req">Submit Request</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Report Food Waste Modal (Donor) -->
+                <div id="modal-report-waste" class="modal-backdrop hidden">
+                    <div class="modal-box">
+                        <div class="modal-header">
+                            <h3>Report Wasted Food</h3>
+                            <button class="btn-icon modal-close" data-modal="modal-report-waste">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-desc">Explicitly report uncollected available food as wasted. This quantity will be permanently recorded in platform food waste statistics.</p>
+                            <div class="item-summary-card">
+                                <strong id="modal-waste-food-name">Food Name</strong>
+                                <div class="item-summary-meta">
+                                    <span>Currently Available: <strong id="modal-waste-avail-qty">0</strong> <span id="modal-waste-unit">kg</span></span>
+                                </div>
+                            </div>
+                            <form id="form-report-waste">
+                                <input type="hidden" id="modal-waste-food-id">
+                                <div class="form-group">
+                                    <label for="modal-waste-quantity">Quantity Wasted *</label>
+                                    <input type="number" id="modal-waste-quantity" class="form-control" step="0.1" min="0.1" required>
+                                    <span class="field-error" id="modal-waste-error"></span>
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-outline modal-close" data-modal="modal-report-waste">Cancel</button>
+                                    <button type="submit" class="btn btn-outline-danger" id="btn-submit-waste">Confirm Waste Report</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Reject Request Modal (Donor) -->
+                <div id="modal-reject-request" class="modal-backdrop hidden">
+                    <div class="modal-box">
+                        <div class="modal-header">
+                            <h3>Reject Request</h3>
+                            <button class="btn-icon modal-close" data-modal="modal-reject-request">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form-reject-request">
+                                <input type="hidden" id="modal-reject-req-id">
+                                <div class="form-group">
+                                    <label for="modal-reject-reason">Reason for Rejection (Optional)</label>
+                                    <textarea id="modal-reject-reason" class="form-control" rows="3" placeholder="e.g. Food already allocated to another receiver or pickup time not feasible"></textarea>
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-outline modal-close" data-modal="modal-reject-request">Cancel</button>
+                                    <button type="submit" class="btn btn-outline-danger" id="btn-submit-reject">Reject Request</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Confirm Collection Modal (Donor) -->
+                <div id="modal-complete-request" class="modal-backdrop hidden">
+                    <div class="modal-box">
+                        <div class="modal-header">
+                            <h3>Confirm Food Collection</h3>
+                            <button class="btn-icon modal-close" data-modal="modal-complete-request">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="modal-desc">Confirm that the receiver has successfully collected this food. This transaction moves the reserved quantity to collected and counts as reused food.</p>
+                            <form id="form-complete-request">
+                                <input type="hidden" id="modal-complete-req-id">
+                                <div class="form-group">
+                                    <label for="modal-complete-beneficiaries">Estimated Beneficiaries Helped *</label>
+                                    <input type="number" id="modal-complete-beneficiaries" class="form-control" min="1" step="1" placeholder="e.g. 5" required>
+                                    <small class="form-hint">Enter the approximate number of people this food will feed.</small>
+                                    <span class="field-error" id="modal-complete-error"></span>
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-outline modal-close" data-modal="modal-complete-request">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="btn-submit-complete">Confirm Collection</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Edit Food Modal (Donor) -->
+                <div id="modal-edit-food" class="modal-backdrop hidden">
+                    <div class="modal-box modal-lg">
+                        <div class="modal-header">
+                            <h3>Edit Food Donation Listing</h3>
+                            <button class="btn-icon modal-close" data-modal="modal-edit-food">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form-edit-food">
+                                <input type="hidden" id="edit-food-id">
+                                <div class="form-row">
+                                    <div class="form-group flex-2">
+                                        <label for="edit-food-name">Food Name *</label>
+                                        <input type="text" id="edit-food-name" class="form-control" required>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="edit-food-category">Category *</label>
+                                        <select id="edit-food-category" class="form-control" required>
+                                            <option value="Cooked Meals">Cooked Meals</option>
+                                            <option value="Bakery & Bread">Bakery & Bread</option>
+                                            <option value="Fresh Produce">Fresh Produce</option>
+                                            <option value="Dairy & Eggs">Dairy & Eggs</option>
+                                            <option value="Packaged & Canned">Packaged & Canned</option>
+                                            <option value="Beverages">Beverages</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="edit-total-qty">Total Quantity *</label>
+                                        <input type="number" id="edit-total-qty" class="form-control" step="0.1" min="0.1" required>
+                                        <small class="form-hint" id="edit-qty-hint"></small>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="edit-unit">Unit *</label>
+                                        <input type="text" id="edit-unit" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-pickup-address">Pickup Address *</label>
+                                    <textarea id="edit-pickup-address" class="form-control" rows="2" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-image-url">Image URL</label>
+                                    <input type="url" id="edit-image-url" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-description">Description</label>
+                                    <textarea id="edit-description" class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="modal-actions">
+                                    <button type="button" class="btn btn-outline modal-close" data-modal="modal-edit-food">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" id="btn-submit-edit">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- USER PROFILE SECTION                                      -->
+                <!-- ========================================================= -->
+                <section id="section-profile" class="app-section hidden">
+                    <div class="section-welcome">
+                        <h2>Account Profile</h2>
+                        <p class="text-muted">Your authenticated user details stored in Clever Cloud MySQL.</p>
+                    </div>
+
+                    <div class="card profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar" id="profile-avatar">U</div>
+                            <div class="profile-title">
+                                <h3 id="profile-name">User Name</h3>
+                                <span class="status-badge" id="profile-role-badge">ROLE</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-details-grid">
+                            <div class="profile-detail-item">
+                                <span class="detail-label">Email Address</span>
+                                <span class="detail-value" id="profile-email">email@example.com</span>
+                            </div>
+                            <div class="profile-detail-item">
+                                <span class="detail-label">Phone Number</span>
+                                <span class="detail-value" id="profile-phone">Not provided</span>
+                            </div>
+                            <div class="profile-detail-item">
+                                <span class="detail-label">Account Status</span>
+                                <span class="detail-value text-success font-semibold" id="profile-status">ACTIVE</span>
+                            </div>
+                            <div class="profile-detail-item">
+                                <span class="detail-label">User ID</span>
+                                <span class="detail-value font-mono" id="profile-id">#1</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- PLACEHOLDER SECTIONS (For Phase 4 & Phase 5 features)     -->
+                <!-- ========================================================= -->
+                <section id="section-placeholder" class="app-section hidden">
+                    <div class="card placeholder-card">
+                        <div class="placeholder-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <h2 id="placeholder-title">Section Coming Soon</h2>
+                        <p id="placeholder-desc" class="text-muted">This module will be implemented in Phase 4 / Phase 5 according to the FoodBridge Blueprint.</p>
+                        <button class="btn btn-primary" id="btn-placeholder-back">Return to Dashboard</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
+
